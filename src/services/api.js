@@ -1,25 +1,47 @@
 import axios from 'axios';
 
-// Configuração base do Axios para requisições à API
+// Configuração base da API
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api', // URL base da API
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8080/api',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Interceptador de requisições para adicionar JWT (esqueleto)
+// Interceptador para adicionar token JWT em todas as requisições
 api.interceptors.request.use(
   (config) => {
-    // Aqui futuramente será adicionado o token JWT no header Authorization
-    // Exemplo: config.headers.Authorization = `Bearer ${token}`;
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
-// Interceptador de respostas para tratar erros de autenticação (esqueleto)
+// Interceptador para tratar respostas e erros
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   (error) => {
-    // Aqui futuramente será tratada a lógica de erro de autenticação/expiração de token
+    // Tratamento de erros de autenticação
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      localStorage.removeItem('tipoUsuario');
+      window.location.href = '/login';
+    }
+    
+    // Tratamento de erros de rede
+    if (!error.response) {
+      console.error('Erro de rede:', error.message);
+    }
+    
     return Promise.reject(error);
   }
 );

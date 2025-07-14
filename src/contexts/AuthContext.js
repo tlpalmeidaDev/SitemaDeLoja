@@ -1,4 +1,6 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { authService } from '../services/authService';
+import { storeService } from '../services/storeService';
 
 // Contexto de autenticação e controle de acesso
 export const AuthContext = createContext();
@@ -8,47 +10,42 @@ export const AuthProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
   const [tipoUsuario, setTipoUsuario] = useState(null);
   const [offline, setOffline] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Estado para lista de lojas mockadas
-  const [lojas, setLojas] = useState([
-    { id: 1, nome: 'Loja Centro', endereco: 'Rua das Flores, 123', telefone: '11999999999', ativa: true },
-    { id: 2, nome: 'Loja Bairro', endereco: 'Av. Principal, 456', telefone: '11888888888', ativa: true },
-    { id: 3, nome: 'Loja Shopping', endereco: 'Shopping Center, Loja 15', telefone: '11777777777', ativa: true },
-  ]);
+  // Estado para lista de lojas
+  const [lojas, setLojas] = useState([]);
 
   // Função de login
-  const login = (email, senha) => {
-    // Simulação de login (mock - futuramente integração com backend)
-    const usuariosMock = [
-      { id: 1, nome: 'João Silva', email: 'joao@email.com', senha: '123456', tipo: 'administrador', loja: 'Loja Centro', ativo: true, foto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face' },
-      { id: 2, nome: 'Maria Santos', email: 'maria@email.com', senha: '123456', tipo: 'funcionario', loja: 'Loja Bairro', ativo: true, foto: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face' },
-      { id: 3, nome: 'Pedro Costa', email: 'pedro@email.com', senha: '123456', tipo: 'funcionario', loja: 'Loja Shopping', ativo: false, foto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face' },
-      { id: 4, nome: 'Ana Oliveira', email: 'ana@email.com', senha: '123456', tipo: 'administrador', loja: 'Loja Centro', ativo: true, foto: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face' },
-      { id: 5, nome: 'Carlos Lima', email: 'carlos@email.com', senha: '123456', tipo: 'funcionario', loja: 'Loja Bairro', ativo: true, foto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face' },
-    ];
-
-    const usuarioEncontrado = usuariosMock.find(u => u.email === email && u.senha === senha);
-    
-    if (usuarioEncontrado && usuarioEncontrado.ativo) {
-      const { senha, ...usuarioSemSenha } = usuarioEncontrado;
-      setUsuario(usuarioSemSenha);
-      setTipoUsuario(usuarioEncontrado.tipo);
-      localStorage.setItem('usuario', JSON.stringify(usuarioSemSenha));
-      localStorage.setItem('tipoUsuario', usuarioEncontrado.tipo);
-      return { sucesso: true, mensagem: 'Login realizado com sucesso!' };
-    } else if (usuarioEncontrado && !usuarioEncontrado.ativo) {
-      return { sucesso: false, mensagem: 'Usuário inativo. Entre em contato com o administrador.' };
-    } else {
-      return { sucesso: false, mensagem: 'Email ou senha incorretos.' };
+  const login = async (email, senha) => {
+    try {
+      setLoading(true);
+      const response = await authService.login(email, senha);
+      
+      if (response.sucesso) {
+        setUsuario(response.usuario);
+        setTipoUsuario(response.usuario.tipo);
+        return { sucesso: true, mensagem: response.mensagem || 'Login realizado com sucesso!' };
+      } else {
+        return { sucesso: false, mensagem: response.mensagem || 'Erro no login' };
+      }
+    } catch (error) {
+      console.error('Erro no login:', error);
+      return { sucesso: false, mensagem: error.message || 'Erro ao fazer login' };
+    } finally {
+      setLoading(false);
     }
   };
 
   // Função de logout
-  const logout = () => {
-    setUsuario(null);
-    setTipoUsuario(null);
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('tipoUsuario');
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error('Erro no logout:', error);
+    } finally {
+      setUsuario(null);
+      setTipoUsuario(null);
+    }
   };
 
   // Função para verificar se usuário está logado
@@ -83,60 +80,93 @@ export const AuthProvider = ({ children }) => {
     return false;
   };
 
+  // Função para carregar lojas
+  const carregarLojas = async () => {
+    try {
+      const response = await storeService.getStores();
+      setLojas(response.data || []);
+    } catch (error) {
+      console.error('Erro ao carregar lojas:', error);
+      setLojas([]);
+    }
+  };
+
   // Função para adicionar nova loja
-  const adicionarLoja = (novaLoja) => {
-    const lojaComId = {
-      ...novaLoja,
-      id: Math.max(...lojas.map(l => l.id)) + 1,
-      ativa: true
-    };
-    setLojas((prev) => [...prev, lojaComId]);
+  const adicionarLoja = async (novaLoja) => {
+    try {
+      const response = await storeService.createStore(novaLoja);
+      setLojas(prev => [...prev, response.data]);
+      return { sucesso: true, mensagem: 'Loja criada com sucesso!' };
+    } catch (error) {
+      console.error('Erro ao criar loja:', error);
+      return { sucesso: false, mensagem: error.message };
+    }
   };
 
   // Função para editar loja
-  const editarLoja = (id, dadosAtualizados) => {
-    setLojas((prev) => prev.map(loja => 
-      loja.id === id ? { ...loja, ...dadosAtualizados } : loja
-    ));
+  const editarLoja = async (id, dadosAtualizados) => {
+    try {
+      const response = await storeService.updateStore(id, dadosAtualizados);
+      setLojas(prev => prev.map(loja => 
+        loja.id === id ? response.data : loja
+      ));
+      return { sucesso: true, mensagem: 'Loja atualizada com sucesso!' };
+    } catch (error) {
+      console.error('Erro ao atualizar loja:', error);
+      return { sucesso: false, mensagem: error.message };
+    }
   };
 
   // Função para excluir loja
-  const excluirLoja = (id) => {
-    setLojas((prev) => prev.filter(loja => loja.id !== id));
-  };
-
-  // Função para adicionar usuário
-  const adicionarUsuario = (novoUsuario) => {
-    const usuarioComId = {
-      ...novoUsuario,
-      id: Date.now(),
-      ativo: true
-    };
-    // Aqui você adicionaria à lista de usuários (mock)
-    console.log('Novo usuário adicionado:', usuarioComId);
-  };
-
-  // Função para editar usuário
-  const editarUsuario = (id, dadosAtualizados) => {
-    // Aqui você atualizaria o usuário na lista (mock)
-    console.log('Usuário editado:', id, dadosAtualizados);
-  };
-
-  // Função para excluir usuário
-  const excluirUsuario = (id) => {
-    // Aqui você removeria o usuário da lista (mock)
-    console.log('Usuário excluído:', id);
-  };
-
-  // Carregar dados do localStorage ao inicializar
-  React.useEffect(() => {
-    const usuarioSalvo = localStorage.getItem('usuario');
-    const tipoSalvo = localStorage.getItem('tipoUsuario');
-    
-    if (usuarioSalvo && tipoSalvo) {
-      setUsuario(JSON.parse(usuarioSalvo));
-      setTipoUsuario(tipoSalvo);
+  const excluirLoja = async (id) => {
+    try {
+      await storeService.deleteStore(id);
+      setLojas(prev => prev.filter(loja => loja.id !== id));
+      return { sucesso: true, mensagem: 'Loja excluída com sucesso!' };
+    } catch (error) {
+      console.error('Erro ao excluir loja:', error);
+      return { sucesso: false, mensagem: error.message };
     }
+  };
+
+  // Função para verificar token ao inicializar
+  const verificarToken = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const response = await authService.verifyToken();
+        setUsuario(response.usuario);
+        setTipoUsuario(response.usuario.tipo);
+      }
+    } catch (error) {
+      console.error('Token inválido:', error);
+      // Limpar dados inválidos
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      localStorage.removeItem('tipoUsuario');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Carregar dados ao inicializar
+  useEffect(() => {
+    verificarToken();
+    carregarLojas();
+  }, []);
+
+  // Verificar conectividade
+  useEffect(() => {
+    const handleOnline = () => setOffline(false);
+    const handleOffline = () => setOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   return (
@@ -146,6 +176,7 @@ export const AuthProvider = ({ children }) => {
       offline, 
       setOffline, 
       lojas, 
+      loading,
       login, 
       logout, 
       isAuthenticated, 
@@ -155,9 +186,7 @@ export const AuthProvider = ({ children }) => {
       adicionarLoja,
       editarLoja,
       excluirLoja,
-      adicionarUsuario,
-      editarUsuario,
-      excluirUsuario
+      carregarLojas
     }}>
       {children}
     </AuthContext.Provider>
