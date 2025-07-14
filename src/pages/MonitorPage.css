@@ -1,0 +1,410 @@
+/* Estilo raiz para dark mode tech */
+.monitor-root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1333 0%, #2d0b4e 100%);
+  color: #f3f0fa;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+.monitor-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 16px 64px 16px;
+}
+
+/* Header */
+.monitor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #2d1a4d;
+  padding-bottom: 18px;
+  margin-bottom: 32px;
+}
+.monitor-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.monitor-title h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #a259ff;
+  margin: 0;
+  letter-spacing: 1px;
+}
+.monitor-actions {
+  display: flex;
+  gap: 12px;
+}
+.monitor-btn {
+  background: #2d0b4e;
+  color: #a259ff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.monitor-btn:hover {
+  background: #a259ff;
+  color: #fff;
+  box-shadow: 0 2px 12px #a259ff44;
+}
+.monitor-btn-full {
+  background: #a259ff;
+  color: #fff;
+}
+.monitor-btn-full:hover {
+  background: #7b3fbf;
+}
+
+/* KPIs */
+.monitor-kpis {
+  margin-bottom: 32px;
+}
+.monitor-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+}
+.monitor-kpi-card {
+  background: linear-gradient(135deg, #2d0b4e 60%, #a259ff 100%);
+  color: #fff;
+  border-radius: 14px;
+  padding: 28px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  box-shadow: 0 2px 12px #0002;
+  min-height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-icon {
+  font-size: 1.5rem;
+  color: #fff;
+  opacity: 0.8;
+}
+.kpi-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #fff;
+}
+.kpi-label {
+  font-size: 1rem;
+  color: #e0cfff;
+  opacity: 0.85;
+}
+
+/* Grid de Câmeras */
+.monitor-cameras {
+  margin-bottom: 32px;
+}
+.monitor-cameras h3 {
+  color: #a259ff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+.monitor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 22px;
+}
+.monitor-camera-card {
+  background: #22143a;
+  border-radius: 12px;
+  padding: 18px 14px 14px 14px;
+  box-shadow: 0 2px 12px #0002;
+  border: 2px solid #2d0b4e;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s, transform 0.15s;
+  position: relative;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.monitor-camera-card.online {
+  border-color: #4caf50;
+}
+.monitor-camera-card.offline {
+  border-color: #f44336;
+  opacity: 0.7;
+}
+.monitor-camera-card:hover {
+  box-shadow: 0 4px 24px #a259ff33;
+  transform: translateY(-2px) scale(1.02);
+}
+.monitor-camera-video {
+  position: relative;
+  margin-bottom: 12px;
+}
+.video-placeholder {
+  background: linear-gradient(135deg, #1a1333 60%, #2d0b4e 100%);
+  height: 160px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  animation: pulse 2s infinite;
+}
+.video-placeholder.grande {
+  height: 320px;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 #a259ff33; }
+  70% { box-shadow: 0 0 0 16px #a259ff00; }
+  100% { box-shadow: 0 0 0 0 #a259ff00; }
+}
+.status-dot {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 6px #0008;
+}
+.dot-online {
+  background: #4caf50;
+}
+.dot-offline {
+  background: #f44336;
+}
+.camera-status-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px #0003;
+}
+.badge-online {
+  background: #4caf50;
+}
+.badge-offline {
+  background: #f44336;
+}
+.monitor-camera-info {
+  margin-top: 4px;
+}
+.camera-nome {
+  font-weight: 700;
+  color: #fff;
+  font-size: 1.1rem;
+}
+.camera-local {
+  color: #a259ff;
+  font-size: 0.98rem;
+  margin-bottom: 2px;
+}
+.camera-ultima {
+  color: #bdbdbd;
+  font-size: 0.85rem;
+}
+
+/* Filtros de Alertas */
+.monitor-filtros {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 18px;
+  align-items: center;
+}
+.monitor-input {
+  background: #2d0b4e;
+  color: #fff;
+  border: 1.5px solid #a259ff;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.monitor-input:focus {
+  border-color: #fff;
+}
+
+/* Alertas em Tempo Real */
+.monitor-alertas {
+  margin-bottom: 32px;
+}
+.monitor-alertas h3 {
+  color: #ff4d6d;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.alertas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.alerta-card {
+  background: #2d0b4e;
+  border-radius: 10px;
+  padding: 18px 16px;
+  box-shadow: 0 2px 12px #0002;
+  border-left: 6px solid #a259ff;
+  position: relative;
+  animation: fadeIn 0.7s;
+  transition: box-shadow 0.2s, border 0.2s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+.alerta-alta { border-left-color: #ff4d6d; }
+.alerta-média { border-left-color: #ff9800; }
+.alerta-baixa { border-left-color: #4caf50; }
+.alerta-animado {
+  box-shadow: 0 0 16px 2px #ff4d6d88;
+  animation: alertaPulse 1.2s infinite alternate;
+}
+@keyframes alertaPulse {
+  0% { box-shadow: 0 0 16px 2px #ff4d6d88; }
+  100% { box-shadow: 0 0 32px 8px #ff4d6d44; }
+}
+.alerta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.alerta-camera {
+  font-weight: 700;
+  color: #fff;
+  font-size: 1rem;
+}
+.alerta-badge {
+  background: #a259ff;
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.alerta-desc {
+  color: #fff;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+.alerta-data {
+  color: #bdbdbd;
+  font-size: 0.9rem;
+}
+.alerta-vazio {
+  color: #bdbdbd;
+  text-align: center;
+  padding: 18px 0;
+}
+
+/* Modal de Câmera Ativa */
+.monitor-modal-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(20, 10, 30, 0.92);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.4s;
+}
+.monitor-modal {
+  background: #1a1333;
+  border-radius: 16px;
+  padding: 32px 24px 24px 24px;
+  min-width: 320px;
+  max-width: 98vw;
+  box-shadow: 0 8px 32px #0008;
+  position: relative;
+  animation: fadeIn 0.4s;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.modal-header h3 {
+  color: #a259ff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+}
+.modal-close {
+  background: none;
+  color: #fff;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0 8px;
+  transition: color 0.2s;
+}
+.modal-close:hover {
+  color: #ff4d6d;
+}
+.modal-video {
+  margin-bottom: 18px;
+  position: relative;
+}
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+.monitor-btn-play {
+  background: #4caf50;
+  color: #fff;
+}
+.monitor-btn-pause {
+  background: #ff9800;
+  color: #fff;
+}
+.monitor-btn-download {
+  background: #a259ff;
+  color: #fff;
+}
+.monitor-btn-play:hover {
+  background: #388e3c;
+}
+.monitor-btn-pause:hover {
+  background: #f57c00;
+}
+.monitor-btn-download:hover {
+  background: #7b3fbf;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .monitor-kpi-grid, .monitor-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .monitor-header, .monitor-kpi-grid, .monitor-grid, .monitor-filtros {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .monitor-kpi-grid, .monitor-grid {
+    grid-template-columns: 1fr;
+  }
+  .monitor-modal {
+    padding: 16px 6px 12px 6px;
+  }
+} 
